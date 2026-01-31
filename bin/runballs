@@ -1,4 +1,4 @@
 #!/bin/bash
 
 python3 depth_estimation.py
-python3 balls.py
+python3 cloud.py

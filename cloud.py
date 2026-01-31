@@ -21,8 +21,22 @@ depth_img = cv2.cvtColor(depth_img, cv2.COLOR_BGR2RGB)  # convert to RGB
 colors_img = cv2.imread(colors_image)
 colors_img = cv2.cvtColor(colors_img, cv2.COLOR_BGR2RGB)
 
-# depth_img = cv2.resize(depth_img, None, fx=0.01, fy=0.01)
 height, width, _ = depth_img.shape
+
+# depth_vals = []
+# for i in range(height):
+#     row = []
+#     for j in range(width):
+#         row.append(np.mean(depth_img[i][j]))
+#     depth_vals.append(row)
+
+# depth_vals = np.array(depth_vals)
+# depth_vals = depth_vals 
+
+# depth_img = cv2.resize(depth_img, None, fx=0.01, fy=0.01)
+
+cx = width / 2
+cy = height / 2
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
@@ -31,12 +45,12 @@ ax = fig.add_subplot(projection='3d')
 u, v = np.meshgrid(np.arange(width), np.arange(height))
 
 # Camera specs
-focal_length = -600  # in pixels, works much better than like mm distance for some reason, larger values tend to scale well with the small edepth values, maybe we can scale up the x and the y's then? Comes from the camera's intrinsic matrix
+focal_length = 1200  # in pixels, works much better than like mm distance for some reason, larger values tend to scale well with the small edepth values, maybe we can scale up the x and the y's then? Comes from the camera's intrinsic matrix
 
 # Apply 214 formula, with updated focal_length
-X = u * depth_vals / focal_length
-Y = v * depth_vals / focal_length
-Z = depth_vals * (1)
+X = (u - cx) * depth_vals / focal_length
+Y = -(v - cy) * depth_vals / focal_length
+Z = depth_vals * (-1)
 
 # Flatten for Open3D
 X_flat = X.flatten()
@@ -72,19 +86,19 @@ o3d.visualization.draw_geometries(
 o3d.io.write_point_cloud("point_cloud.ply", pcd)
 print("Saved point cloud!")
 
-distances = pcd.compute_nearest_neighbor_distance()
-avg_dist = np.mean(distances)
-radius = 3 * avg_dist
+# distances = pcd.compute_nearest_neighbor_distance()
+# avg_dist = np.mean(distances)
+# radius = 3 * avg_dist
 
-bpa_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(pcd, o3d.utility.DoubleVector([radius, radius * 2]))
+# bpa_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_ball_pivoting(pcd, o3d.utility.DoubleVector([radius, radius * 2]))
 
-dec_mesh = bpa_mesh.simplify_quadric_decimation(100000)
+# dec_mesh = bpa_mesh.simplify_quadric_decimation(100000)
 
-dec_mesh.remove_degenerate_triangles()
-dec_mesh.remove_duplicated_triangles()
-dec_mesh.remove_duplicated_vertices()
-dec_mesh.remove_non_manifold_edges()
+# dec_mesh.remove_degenerate_triangles()
+# dec_mesh.remove_duplicated_triangles()
+# dec_mesh.remove_duplicated_vertices()
+# dec_mesh.remove_non_manifold_edges()
 
-o3d.visualization.draw_geometries([dec_mesh], window_name="BPA Mesh Post-Processed")
+# o3d.visualization.draw_geometries([dec_mesh], window_name="BPA Mesh Post-Processed")
 
-o3d.io.write_triangle_mesh("cloud_mesh.ply", dec_mesh)
+# o3d.io.write_triangle_mesh("cloud_mesh.ply", dec_mesh)
