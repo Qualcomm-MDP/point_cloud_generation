@@ -23,13 +23,21 @@ with open(predicted_depths, "r") as f:
         depths = [float(x) for x in line.strip().split()]
         depth_vals.append(depths)
 
+# # read in the depth image (if we decide to use the depth image instead of the predicted depths) and colors image
+# depth_img = cv2.imread(depth_image)
+# depth_img = cv2.cvtColor(depth_img, cv2.COLOR_BGR2RGB)  # convert to RGB
+
+# # If we want to use the depth map image as the basis of our new depths
+# depth_vals = []
+# for i in range(height):
+#     row = []
+#     for j in range(width):
+#         row.append(np.mean(depth_img[i][j]))
+#     depth_vals.append(row)
+
 # Convert the depth_vals into a numpy array for vectorized calculations later
 depth_vals = np.array(depth_vals)
 depth_vals = depth_vals 
-
-# read in the depth image (if we decide to use the depth image instead of the predicted depths) and colors image
-# depth_img = cv2.imread(depth_image)
-# depth_img = cv2.cvtColor(depth_img, cv2.COLOR_BGR2RGB)  # convert to RGB
 
 colors_img = cv2.imread(colors_image)
 colors_img = cv2.cvtColor(colors_img, cv2.COLOR_BGR2RGB)
@@ -37,18 +45,19 @@ colors_img = cv2.cvtColor(colors_img, cv2.COLOR_BGR2RGB)
 height, width, _ = colors_img.shape
 sky_path = ""
 
-# for file in os.listdir(instance_masks_path):
-#     file_path = instance_masks_path + file
-#     components = file.strip().split("_")
-#     if components[1] == "sky":
-#         sky_path = file_path
-#         break
+for file in os.listdir(instance_masks_path):
+    file_path = instance_masks_path + file
+    components = file.strip().split("_")
+    if components[1] == "sky":
+        sky_path = file_path
+        break
 
 # Get a list of which coordinates are in the sky, if the model was able to perform a sky segmentation
 sky_coordinates = []
 if sky_path != "":
     # Read sky segmented image into a mask
     mask_image = cv2.imread(sky_path)
+    mask_image = cv2.resize(mask_image, (width, height))
     cv2.imwrite("sky_mask.jpg", mask_image)
 
     # Find the sky coordinates
@@ -60,14 +69,6 @@ if sky_path != "":
     sky_set = set(sky_coordinates) # Convert to a set for O(1) lookup, faster than a list
 else:
     sky_set = set(sky_coordinates) # If there was no segmentation performed, just leave that set empty
-
-# If we want to use the depth map image as the basis of our new depths
-# depth_vals = []
-# for i in range(height):
-#     row = []
-#     for j in range(width):
-#         row.append(np.mean(depth_img[i][j]))
-#     depth_vals.append(row)
 
 # Get the center of our image, where we center our point cloud on
 cx = width / 2
