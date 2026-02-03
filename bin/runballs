@@ -1,4 +1,5 @@
 #!/bin/bash
 
+python3 edge2.py
 python3 depth_estimation.py
 python3 cloud.py
