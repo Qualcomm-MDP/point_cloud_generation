@@ -21,17 +21,6 @@ print(json.dumps(obj, indent=2))
 
 MAPILLARY_URL = "https://graph.mapillary.com/images"
 
-
-COORDS = [
-    # (42.278594, -83.740779) # University St
-    #(42.2754250, -83.7432138), # central
-    (42.292091, -83.716011), # north
-    # (42.274933, -83.743182), # munger
-    
-]
-
-
-
 min_lon = -83.71996
 max_lon = -83.71167
 min_lat = 42.29006
