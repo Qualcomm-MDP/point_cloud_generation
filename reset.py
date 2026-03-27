@@ -20,3 +20,23 @@ else:
     os.mkdir(output_dir)
     print(f"Directory '{output_dir}' did not exist and we created it now.")
 os.makedirs(output_dir, exist_ok=True)
+
+output_dir = "tmp"
+if os.path.exists(output_dir):
+    shutil.rmtree(output_dir)
+    os.mkdir(output_dir)
+    print(f"Directory '{output_dir}' exist and cleard its contents!")
+else:
+    os.mkdir(output_dir)
+    print(f"Directory '{output_dir}' did not exist and we created it now.")
+os.makedirs(output_dir, exist_ok=True)
+
+output_dir = "out"
+if os.path.exists(output_dir):
+    shutil.rmtree(output_dir)
+    os.mkdir(output_dir)
+    print(f"Directory '{output_dir}' exist and cleard its contents!")
+else:
+    os.mkdir(output_dir)
+    print(f"Directory '{output_dir}' did not exist and we created it now.")
+os.makedirs(output_dir, exist_ok=True)
